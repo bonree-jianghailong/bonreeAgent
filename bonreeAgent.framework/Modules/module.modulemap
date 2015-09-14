@@ -1,0 +1,6 @@
+framework module bonreeAgent {
+  umbrella header "bonreeAgent.h"
+
+  export *
+  module * { export * }
+}
