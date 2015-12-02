@@ -1,19 +1,68 @@
-//
-//  bonreeAgent.h
-//  bonreeAgent
-//
-//  Created by 蒋海龙 on 15/7/14.
-//  Copyright (c) 2015年 蒋海龙. All rights reserved.
-//
+/*
+ *
+ * Copyright (c) 2015-2020  Bonree Company
+ * 北京博睿宏远科技发展有限公司  版权所有 2015-2020
+ *
+ * PROPRIETARY RIGHTS of Bonree Company are involved in the
+ * subject matter of this material.  All manufacturing, reproduction, use,
+ * and sales rights pertaining to this subject matter are governed by the
+ * license agreement.  The recipient of this software implicitly accepts
+ * the terms of the license.
+ * 本软件文档资料是博睿公司的资产,任何人士阅读和使用本资料必须获得
+ * 相应的书面授权,承担保密责任和接受相应的法律约束.
+ *
+ */
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-//! Project version number for bonreeAgent.
-FOUNDATION_EXPORT double bonreeAgentVersionNumber;
+//是否捕获crash信息,默认打开
+#define BRSOption_Crash         (1 << 0)
+//是否打开位置服务,默认关闭
+#define BRSOption_Location      (1 << 1)
+//是否异步启动.异步启动会加快启动速度,但可能会捕获不到刚启动约150ms的网络数据.默认同步启动
+#define BRSOption_AsyncStart    (1 << 2)
 
-//! Project version string for bonreeAgent.
-FOUNDATION_EXPORT const unsigned char bonreeAgentVersionString[];
+@interface BRSAgent : NSObject
 
-// In this header, you should import all the public headers of your framework using statements like #import <bonreeAgent/PublicHeader.h>
+//启动bonreeAgent
++ (void)startWithAppID:(NSString*)appid;
 
-#import "bonreeAgent/BRSAgent.h"
+//启动bonreeAgent,并指明是否使用位置服务
++ (void)startWithAppID:(NSString*)appId location:(BOOL)locationAllowed;
+
+//启动bonreeAgent,并指定启动概率,如50%的概率启动,rate赋为0.5即可
++ (void)startWithAppID:(NSString*)appId rateOfLaunch:(double)rate;
+
+//启动bonreeAgent,同时指定启动概率和是否使用位置服务
++ (void)startWithAppID:(NSString*)appId location:(BOOL)locationAllowed rateOfLaunch:(double)rate;
+
+//设置是否捕获崩溃日志,默认打开
++ (void) enableCrashReporting:(BOOL)enable;
+
+//设置是否获取位置信息,默认关闭
++ (void)enableLocation:(BOOL)enable;
+
+//设置启动概率,默认100%
++ (void)setRateOfLaunch:(double)rate;
+
+//设置启动选项
++ (void)setOption:(int)option;
+
+@end
+
+/*
+ Example 1:
+ 最简单的,默认关闭位置服务,默认打开捕获崩溃信息,启动概率为100%,同步启动
+ [BRSAgent startWithAppID:@"xxxx"];
+ 
+ Example 2:
+ 打开位置服务,启动概率为50%
+ [BRSAgent startWithAppID:@"xxxx"
+                 location:YES
+             rateOfLaunch:0.5];
+ 
+ Example 3:
+ 打开捕获崩溃信息,关闭位置服务,异步启动
+ [BRSAgent setOption:BRSOption_Crash|BRSOption_AsyncStart];
+ [BRSAgent startWithAppID:@"xxxx"];
+*/

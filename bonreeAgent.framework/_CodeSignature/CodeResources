@@ -4,36 +4,36 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>Headers/BRSAgent.h</key>
-		<data>
-		mNRgLLS8kFZ+nmgz4IcKKP/LMwo=
-		</data>
 		<key>Headers/bonreeAgent.h</key>
 		<data>
-		YtseTwmAjMXQvfC4GXhEZGslml4=
+		JF8eOlbqu9IMb5xUKS8c7OzurTc=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		HpHtccgtkbhz5JOSFHvjqNlCScI=
+		DsLvweAkJN7lOjSg/n/lxh0ibAo=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
 		0oKFhlrl9Z4Ne0u00m2fLxqeiFM=
+		</data>
+		<key>embedded.mobileprovision</key>
+		<data>
+		Iv7nQt408Hy7E6pXSfLjpF2kfKY=
 		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
-		<key>Headers/BRSAgent.h</key>
-		<data>
-		mNRgLLS8kFZ+nmgz4IcKKP/LMwo=
-		</data>
 		<key>Headers/bonreeAgent.h</key>
 		<data>
-		YtseTwmAjMXQvfC4GXhEZGslml4=
+		JF8eOlbqu9IMb5xUKS8c7OzurTc=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
 		0oKFhlrl9Z4Ne0u00m2fLxqeiFM=
+		</data>
+		<key>embedded.mobileprovision</key>
+		<data>
+		Iv7nQt408Hy7E6pXSfLjpF2kfKY=
 		</data>
 	</dict>
 	<key>rules</key>
