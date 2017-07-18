@@ -15,17 +15,21 @@
 
 #import <Foundation/Foundation.h>
 
-//是否捕获crash信息,默认打开
-#define BRSOption_Crash         (1 << 0)
-//是否打开位置服务,默认关闭
-#define BRSOption_Location      (1 << 1)
-//是否异步启动.异步启动会加快启动速度,但可能会捕获不到刚启动约150ms的网络数据.默认同步启动
-#define BRSOption_AsyncStart    (1 << 2)
+//日志标志
+#define BRS_LOG_PB      (0x1 << 7)
+#define BRS_LOG_NET     (0x1 << 10)
+#define BRS_LOG_JS      (0x1 << 11)
+#define BRS_LOG_TO_FILE (0x1 << 12)
+
+@class AFSecurityPolicy;
 
 @interface BRSAgent : NSObject
 
-//启动bonreeAgent
+//启动bonreeAgent(ver:3.5.23)
 + (void)startWithAppID:(NSString*)appid;
+
+//启动bonreeAgent，并指明是否使用保障开关(如果sdk造成了崩溃，则sdk在下次启动将只开启崩溃收集功能)，默认开启
++ (void)startWithAppID:(NSString *)appid GuardOn:(BOOL)guardOn;
 
 //启动bonreeAgent,并指明是否使用位置服务
 + (void)startWithAppID:(NSString*)appId location:(BOOL)locationAllowed;
@@ -36,6 +40,9 @@
 //启动bonreeAgent,同时指定启动概率和是否使用位置服务
 + (void)startWithAppID:(NSString*)appId location:(BOOL)locationAllowed rateOfLaunch:(double)rate;
 
+//启动bonreeAgent,同时指定是否开启webview功能,默认开启（YES表示开启，NO表示关闭）
++ (void)startWithAppID:(NSString *)appId webViewOn:(BOOL)webViewOn;
+
 //设置是否捕获崩溃日志,默认打开
 + (void) enableCrashReporting:(BOOL)enable;
 
@@ -45,11 +52,42 @@
 //设置启动概率,默认100%
 + (void)setRateOfLaunch:(double)rate;
 
+//设置是否获取网络性能数据,默认打开
++ (void)enableBonreeNetwork:(BOOL)enable;
+
 //设置config地址,默认公有云不用设置
 + (void)setConfigAddress:(NSString*)configAddress;
 
-//设置启动选项
-+ (void)setOption:(int)option;
+//设置app版本(请在bonreeAgent启动之前设置)
++ (void)setAppVersion:(NSString *)appVersion;
+
++ (void)stopSDK;
+
+//即时upload接口，客户调用该接口，将sdk目前保存的数据及当前视图的信息直接上传，返回值为YES表示上传成功，NO表示上传失败。(同步上传，建议客户启用新的线程调用)
++ (BOOL)upload;
+
+/*
+ 当客户的https请求需要忽略证书时,需要调用以下接口(若客户不需要忽略证书,如:证书为ca证书,请无视以下接口)
+ 例子1:
+ //当发送https请求并且要求忽略证书时,需要客户调用此接口
+ NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+ //...
+ //在生成request后,发送请求之前,调用
+ [BRSAgent ignoreSSLVerify:request];//指定请求忽略证书
+ //...
+ _connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+ 例子2:
+ //所有请求均忽略证书,直接调用
+ [BRSAgent ignoreAllSSLVerify];
+ //若调用了所有请求请求无忽略证书，而个别请求不用忽略证书时,可以调用[BRSAgent sslVerify:request];
+ */
++ (void)ignoreAllSSLVerify;//所有请求均忽略证书
++ (void)ignoreSSLVerify:(NSMutableURLRequest *)request;//指定请求忽略证书
++ (void)sslVerify:(NSMutableURLRequest *)request;//指定请求不忽略证书
++ (void)ignoreSSLVerifyWithHosts:(NSSet *)hostSet;//指定hosts不做证书认证
+
+//指定AFN ssl认证策略,此接口比忽略ssl接口优先级高
++ (void)setAFNSecurityPolicy:(AFSecurityPolicy *)customSecurityPolicy withHost:(NSString *)host;
 
 //行为数据
 
@@ -58,6 +96,9 @@
 
 //自定义事件
 + (void)trackEvent:(NSString*)eventID name:(NSString*)eventName;
+
+//自定义事件(客户可通过dictionary<key,value>参数增加对事件的描述，key为NSString类型，value为NSString或NSNumber类型)
++ (void)trackEvent:(NSString*)eventID name:(NSString*)eventName parameters:(NSDictionary*)dictionary;
 
 /*
  标记页面开始和结束,这两个接口需要成对调用.
@@ -70,6 +111,24 @@
 
 //设置会员id
 + (void)setMemberId:(NSString *)memberId;
+//设置用户信息(客户可通过kv<key,value>参数增加用户信息，key为NSString类型，value为NSString或NSNumber类型)
++ (void)setUserInfo:(NSDictionary *)kv;
+
+/*
+ 打开日志标志,默认关闭.调试使用,不建议在生产环境打开.
+ 例:打开BRS_LOG_NET日志
+ [BRSAgent setLogFlag:@(BRS_LOG_NET)];
+ 
+ 如果将日志写到文件中,
+ 需要在应用程序的Info.plist文件中添加Application supports iTunes file sharing键，
+ 并将键值设置为YES.
+ 例:打开BRS_LOG_NET日志且写到文件中
+ [BRSAgent setLogFlag:@(BRS_LOG_NET|BRS_LOG_TO_FILE)];
+ 
+ 关闭日志开关:
+ [BRSAgent setLogFlag:@0];
+ */
++ (void)setLogFlag:(NSNumber*)flag;
 
 @end
 
@@ -85,7 +144,7 @@
              rateOfLaunch:0.5];
  
  Example 3:
- 打开捕获崩溃信息,关闭位置服务,异步启动
- [BRSAgent setOption:BRSOption_Crash|BRSOption_AsyncStart];
+ 打开捕获崩溃信息
+ [BRSAgent enableCrashReporting:YES];
  [BRSAgent startWithAppID:@"xxxx"];
 */
