@@ -25,7 +25,7 @@
 
 @interface BRSAgent : NSObject
 
-//启动bonreeAgent(ver:3.5.23)
+//启动bonreeAgent(ver:3.5.33)
 + (void)startWithAppID:(NSString*)appid;
 
 //启动bonreeAgent，并指明是否使用保障开关(如果sdk造成了崩溃，则sdk在下次启动将只开启崩溃收集功能)，默认开启
@@ -43,6 +43,9 @@
 //启动bonreeAgent,同时指定是否开启webview功能,默认开启（YES表示开启，NO表示关闭）
 + (void)startWithAppID:(NSString *)appId webViewOn:(BOOL)webViewOn;
 
+//设置是否异步启动
++ (void)enableAsyncStart:(BOOL)enable;
+
 //设置是否捕获崩溃日志,默认打开
 + (void) enableCrashReporting:(BOOL)enable;
 
@@ -55,6 +58,21 @@
 //设置是否获取网络性能数据,默认打开
 + (void)enableBonreeNetwork:(BOOL)enable;
 
+//设置是否开启数据融合,YES表示开启,NO表示关闭,默认关闭(该接口为定制接口,调用之前请与公司的技术人员咨询确认)
++(void)enableMerge:(BOOL)enable;
+
+//设置是否开启崩溃轨迹，YES表示开启，NO表示关闭,公有云版本默认开启
++ (void)enableCrashTrace:(BOOL)enable;
+
+//设置是否开启交互分析，YES表示开启，NO表示关闭,公有云版本默认开启
++ (void)enableInteract:(BOOL)enable;
+
+//设置是否开启卡顿监测，YES表示开启，NO表示关闭,公有云版本默认开启
++ (void)enableStuckMonitorOn:(BOOL)enable;
+
+//设置是否开启webview监测，YES表示开启，NO表示关闭,公有云版本默认开启
++ (void)enableWebviewOn:(BOOL)enable;
+
 //设置config地址,默认公有云不用设置
 + (void)setConfigAddress:(NSString*)configAddress;
 
@@ -65,6 +83,12 @@
 
 //即时upload接口，客户调用该接口，将sdk目前保存的数据及当前视图的信息直接上传，返回值为YES表示上传成功，NO表示上传失败。(同步上传，建议客户启用新的线程调用)
 + (BOOL)upload;
+
+//自定义崩溃收集接口,exceptionName为崩溃类型，如数组越界等；causeby为崩溃原因，即造成崩溃的方法；errordump为崩溃堆栈
++ (void)setUserException:(NSString *) exceptionName CauseBy:(NSString *) causedBy Errordump:(NSString *) errordump;
+
+//设置自定义信息
++ (void)setDefinedLog:(NSString *) memberId Info:(NSString *) definedInfo;
 
 /*
  当客户的https请求需要忽略证书时,需要调用以下接口(若客户不需要忽略证书,如:证书为ca证书,请无视以下接口)
