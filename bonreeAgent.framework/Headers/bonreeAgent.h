@@ -25,7 +25,7 @@
 
 @interface BRSAgent : NSObject
 
-//启动bonreeAgent(ver:3.5.33)
+//启动bonreeAgent(ver:3.5.41)
 + (void)startWithAppID:(NSString*)appid;
 
 //启动bonreeAgent，并指明是否使用保障开关(如果sdk造成了崩溃，则sdk在下次启动将只开启崩溃收集功能)，默认开启
@@ -42,6 +42,9 @@
 
 //启动bonreeAgent,同时指定是否开启webview功能,默认开启（YES表示开启，NO表示关闭）
 + (void)startWithAppID:(NSString *)appId webViewOn:(BOOL)webViewOn;
+
+//设置是否通过弹框方式显示日志，默认关闭
++ (void)enableDebugModel:(BOOL)enable;
 
 //设置是否异步启动
 + (void)enableAsyncStart:(BOOL)enable;
