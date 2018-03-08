@@ -26,7 +26,7 @@
 
 @interface BRSAgent : NSObject
 
-/**启动bonreeAgent(ver:4.0.8)*/
+/**启动bonreeAgent(ver:4.0.9)*/
 + (void)startWithAppID:(NSString*)appid;
 
 /**启动bonreeAgent，并指明是否使用保障开关(如果sdk造成了崩溃，则sdk在下次启动将只开启崩溃收集功能)，默认开启*/
@@ -87,6 +87,32 @@
 
 /**设置自定义信息*/
 + (void)setDefinedLog:(NSString *)memberId Info:(NSString *)definedInfo;
+
+/**增加自定义崩溃轨迹*/
++ (void)addCustomCrashTrace:(NSString *)title action:(NSString *)name;
+
+/*
+ 当客户的https请求需要忽略证书时,需要调用以下接口(若客户不需要忽略证书,如:证书为ca证书,请无视以下接口)
+ 例子1:
+ //当发送https请求并且要求忽略证书时,需要客户调用此接口
+ NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+ //...
+ //在生成request后,发送请求之前,调用
+ [BRSAgent ignoreSSLVerify:request];//指定请求忽略证书
+ //...
+ _connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+ 例子2:
+ //所有请求均忽略证书,直接调用
+ [BRSAgent ignoreAllSSLVerify];
+ //若调用了所有请求请求无忽略证书，而个别请求不用忽略证书时,可以调用[BRSAgent sslVerify:request];
+ */
++ (void)ignoreAllSSLVerify;//所有请求均忽略证书
++ (void)ignoreSSLVerify:(NSMutableURLRequest *)request;//指定请求忽略证书
++ (void)sslVerify:(NSMutableURLRequest *)request;//指定请求不忽略证书
++ (void)ignoreSSLVerifyWithHosts:(NSSet *)hostSet;//指定hosts不做证书认证
+
+/**指定AFN ssl认证策略,此接口比忽略ssl接口优先级高*/
++ (void)setAFNSecurityPolicy:(AFSecurityPolicy *)customSecurityPolicy withHost:(NSString *)host;
 
 #pragma mark -
 #pragma mark - 行为数据
